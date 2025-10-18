@@ -1,0 +1,46 @@
+clsvals = np.loadtxt('dow.txt').astype(float)
+days = np.arange(len(clsvals))
+
+plt.figure(figsize=(6,5))
+plt.plot(days,clsvals,'-')
+plt.xlabel('Days')
+plt.ylabel('Closing values')
+plt.title('daily closing value 2006-2010 of the Dow Jones Industrial Average')
+plt.grid(True, which='major', ls='--')
+plt.show()
+
+
+V = np.fft.rfft(clsvals)
+
+cut = int(0.1*len(V))
+V[cut:] = 0
+clsvals0 = np.fft.irfft(V)
+
+plt.figure(figsize=(6,5))
+plt.plot(days, clsvals,'-', label='original data')
+plt.plot(days, clsvals0, 'r-', label='smoothened data')
+plt.xlabel('Days')
+plt.ylabel('Closing values')
+plt.title('daily closing value 2006-2010 of the Dow Jones Industrial Average')
+plt.grid(True, which='major', ls='--')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+print("Eliminating high frequency modes smoothens the data.")
+
+cut = int(0.02*len(V))
+V[cut:] = 0
+clsvals1 = np.fft.irfft(V)
+
+plt.figure(figsize=(6,5))
+plt.plot(days, clsvals,'-', label='original data')
+plt.plot(days, clsvals0, 'r-', label='smoothened data')
+plt.plot(days, clsvals1, 'g-', label='second smoothened data')
+plt.xlabel('Days')
+plt.ylabel('Closing values')
+plt.title('daily closing value 2006-2010 of the Dow Jones Industrial Average')
+plt.grid(True, which='major', ls='--')
+plt.legend()
+plt.tight_layout()
+plt.show()
