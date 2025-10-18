@@ -1,0 +1,37 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.loadtxt("sunspots.txt")
+years = data[:,0].astype(float)
+spots = data[:,1].astype(float)
+
+plt.figure(figsize=(6,5))
+plt.plot(years,spots,'-')
+plt.xlabel('Months')
+plt.ylabel('Sunspots')
+plt.title('Sunspot number since January 1749')
+plt.grid(True, which='major', ls='--')
+plt.show()
+
+print("Approximate period is 125 months.")
+
+spots_0 = np.copy(spots - np.mean(spots))
+
+S = np.fft.rfft(spots_0)
+K = np.fft.rfftfreq(len(spots_0), d=1)
+
+P = np.abs(S)**2
+idx_peak = np.argmax(P[1:]) + 1
+K_peak = K[idx_peak]
+period_months = 1.0 / K_peak
+
+print(f"peak frequency ≈ {K_peak:.4f} month^-1")
+print(f"correspondent period ≈ {period_months:.1f} months")
+
+plt.figure()
+plt.plot(K, P)
+plt.xlabel('frequency (cycles / month)')
+plt.ylabel('power |c_k|^2')
+plt.title('Sunspot Power Spectrum')
+plt.tight_layout()
+plt.show()
