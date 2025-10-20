@@ -1,0 +1,37 @@
+pic = np.loadtxt('blur.txt')
+
+plt.imshow(pic, cmap='gray', origin='upper')
+plt.colorbar(label='Brightness')
+plt.title("Blurred picture")
+plt.show()
+
+N = 1024 
+sigma = 20.0
+
+x = np.arange(N)
+y = np.arange(N)
+
+x[x>N//2] -= N
+y[y>N//2] -= N
+
+X, Y = np.meshgrid(x, y, indexing='ij')
+f = 1/(2*np.pi*sigma**2)*np.exp(-(X**2+Y**2)/(2*sigma**2))
+
+plt.imshow(f, cmap='gray', origin='upper')
+plt.title('Periodic Gaussian')
+plt.show()
+
+
+f_k = np.fft.rfft2(f)
+pic_k = np.fft.rfft2(pic)
+mask = np.abs(f_k) > 1e-6
+pic_sharp_k = pic_k.copy()
+pic_sharp_k[mask] = pic_k[mask] / (f_k[mask])
+pic_sharp = np.fft.irfft2(pic_sharp_k)
+
+plt.imshow(pic_sharp, cmap='gray', origin='upper')
+plt.colorbar(label='Brightness')
+plt.title("Blurred picture")
+plt.show()
+
+print('There is a limit to deconvolution, ripples appear because dividing by very small |fₖ| during deconvolution amplifies high-frequency noise, producing oscillatory interference in the image.')
